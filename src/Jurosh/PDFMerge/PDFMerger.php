@@ -19,14 +19,13 @@ class PDFMerger {
      * Add a PDF for inclusion in the merge with a valid file path.
      * Params are defined like array:  
      *  'pages' => '...',
-     *  'orientation' => 'vertical / horizontal'
      * 
      * Pages should be formatted: 1,3,6, 12-16.
      * @param $filepath
      * @param $param
      * @return PDFMerger
      */
-    public function addPDF($filepath, $pages = 'all', $orientation = 'vertical') {
+    public function addPDF($filepath, $pages = 'all') {
         if (file_exists($filepath)) {
             $file = new PdfObject;
             
@@ -34,7 +33,6 @@ class PDFMerger {
                 $file->pages = $this->_rewritepages($pages);
             }
             
-            $file->orientation = $orientation;
             $file->path = $filepath;
 
             $this->_files[] = $file;
@@ -72,7 +70,7 @@ class PDFMerger {
                     $template = $fpdi->importPage($i);
                     $size = $fpdi->getTemplateSize($template);
 
-                    $fpdi->AddPage($file->getOrientationCode(), array($size['width'], $size['height']));
+                    $fpdi->AddPage($size['width'] > $size['height'] ? 'L' : 'P', array($size['width'], $size['height']));
                     $fpdi->useTemplate($template);
                 }
             } else {
@@ -82,7 +80,7 @@ class PDFMerger {
                     }
                     $size = $fpdi->getTemplateSize($template);
 
-                    $fpdi->AddPage($file->getOrientationCode(), array($size['w'], $size['h']));
+                    $fpdi->AddPage($size['width'] > $size['height'] ? 'L' : 'P', array($size['width'], $size['height']));
                     $fpdi->useTemplate($template);
                 }
             }
